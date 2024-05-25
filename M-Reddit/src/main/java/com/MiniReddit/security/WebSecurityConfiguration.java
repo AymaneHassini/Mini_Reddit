@@ -32,12 +32,11 @@ public class WebSecurityConfiguration {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-				// Disabling CSRF
-				.csrf(csrf -> csrf.disable())
+				
 				// Authorize requests
 				.authorizeHttpRequests(authz -> authz.requestMatchers("/").permitAll().anyRequest().authenticated())
 				// Form login
-				.formLogin(form -> form.loginPage("/login").permitAll())
+				.formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/Dashboard").permitAll())
 				// Logout configuration
 				.logout(logout -> logout.logoutUrl("/logout").permitAll());
 
