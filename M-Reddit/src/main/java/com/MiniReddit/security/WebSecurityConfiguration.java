@@ -29,21 +29,25 @@ public class WebSecurityConfiguration {
 		authenticationProvider.setPasswordEncoder(getPasswordEncoder());
 		return authenticationProvider;
 	}
-	// @Bean
-//	public UserDetailsService userDetailsService() {
-//		PasswordEncoder encoder = getPasswordEncoder();
-//		UserDetails user = User.builder().username("a.hassini@gmail.com").password(encoder.encode("asdfasdf"))
-//				.roles("USER").build();
+
+//	auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
+//    UserDetails user = User.builder()
+//            .username("a.hassini@gmail.com")
+//            .password(passwordEncoder.encode("asdfasdf"))
+//            .roles("USER")
+//            .build();
 //
-//		return new InMemoryUserDetailsManager(user);
-	// }
+//    return new InMemoryUserDetailsManager(user);
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-
 				// Authorize requests
-				.authorizeHttpRequests(authz -> authz.requestMatchers("/").permitAll().anyRequest().authenticated())
+				.authorizeHttpRequests(authz -> authz.requestMatchers("/").permitAll())
+				.authorizeHttpRequests(authz -> authz.requestMatchers("/register").permitAll())
+
+				.authorizeHttpRequests(authz -> authz.requestMatchers("/admin**/").hasRole("ADMIN"))
+				.authorizeHttpRequests(authz -> authz.anyRequest().hasRole("USER"))
 				// Form login
 				.formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/Dashboard").permitAll())
 				// Logout configuration
