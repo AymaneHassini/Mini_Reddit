@@ -19,7 +19,8 @@ public class Users {
 	private String username;
 	private String password;
 	private String name;
-	Set<Authority> authorities = new HashSet<>();
+	private Set<Authority> authorities = new HashSet<>();
+	private Set<Product> products = new HashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
 	public Set<Authority> getAuthorities() {
@@ -63,5 +64,15 @@ public class Users {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	// if a user deletes an account, no delete product
+	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "user")
+	public Set<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(Set<Product> products) {
+		this.products = products;
 	}
 }
