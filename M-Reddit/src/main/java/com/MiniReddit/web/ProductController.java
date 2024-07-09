@@ -21,43 +21,44 @@ import jakarta.servlet.http.HttpServletResponse;
 // posts in reddit are what products are for mini-reddit
 @Controller
 public class ProductController {
+
 	@Autowired
 	private ProductRepository productRepo;
-
-	@GetMapping("/products")
-	public String getProducts(ModelMap model) {
-		return "product";
-	}
 
 	@GetMapping("/products/{productId}")
 	public String getProduct(@PathVariable Long productId, ModelMap model, HttpServletResponse response)
 			throws IOException {
-		Optional<Product> productOpt = productRepo.findById(productId);
+		Optional<Product> productOpt = productRepo.findByIdWithUser(productId);
+
 		if (productOpt.isPresent()) {
 			Product product = productOpt.get();
-			model.put("product", product); // Add the Product object to the model
+			model.put("product", product);
 		} else {
 			response.sendError(HttpStatus.NOT_FOUND.value(), "Product with id " + productId + " was not found");
 			return "product";
 		}
+
 		return "product";
+	}
+
+	@PostMapping("/products/{productId}")
+	public String saveProduct(@PathVariable Long productId, Product product) {
+		System.out.println(product);
+
+		product = productRepo.save(product);
+
+		return "redirect:/products/" + product.getId();
 	}
 
 	@PostMapping("/products")
 	public String createProduct(@AuthenticationPrincipal Users user) {
 		Product product = new Product();
+
 		product.setPublished(false);
 		product.setUser(user);
+
 		product = productRepo.save(product);
 
 		return "redirect:/products/" + product.getId();
 	}
-
-	@PostMapping("/products/{productId}")
-	public String saveProduct(@PathVariable Long productId, Product product) {
-		product = productRepo.save(product);
-		return "redirect:/products/" + product.getId();
-
-	}
-
 }
